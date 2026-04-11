@@ -3,6 +3,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI, HTTPException, Request, status
 
 from .core.database import shutdown_mongodb, start_up_mongodb
+from .modules.user.router import router as user_router
 
 
 @asynccontextmanager
@@ -19,6 +20,8 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
+app.include_router(user_router)
+
 
 @app.get("/health", status_code=status.HTTP_200_OK)
 async def health(request: Request):
@@ -32,3 +35,8 @@ async def health(request: Request):
             raise RuntimeError("MongoDB is not healthy")
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.get("/", status_code=status.HTTP_200_OK)
+async def root():
+    return {"message": "What are you doing here?"}

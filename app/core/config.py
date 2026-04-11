@@ -18,6 +18,13 @@ class EnvConfig(BaseSettings):
 
     ENVIRONMENT: Environment = Environment.development
 
+    MONGODB_URI: str = "mongodb://localhost:27017"
+    MONGODB_DB_NAME: str = "test"
+
+    JWT_SECRET: str = "change-me-in-dev-use-openssl-rand-hex-32"
+    JWT_ALGORITHM: str = "HS256"
+    JWT_EXPIRE_MINUTES: int = 60
+
 
 envConfig = EnvConfig()
 

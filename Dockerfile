@@ -15,6 +15,7 @@ FROM python:3.13-slim
 
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
+    PYTHONPATH=/code \
     PATH="/opt/venv/bin:$PATH"
 
 RUN groupadd --system --gid 1000 app \
@@ -25,10 +26,8 @@ WORKDIR /code
 COPY --from=builder /opt/venv /opt/venv
 COPY --chown=app:app ./app ./app
 
-RUN mkdir -p /code/uploads && chown app:app /code/uploads
-
 USER app
 
 EXPOSE 8000
 
-CMD ["fastapi", "run", "app/main.py", "--host", "0.0.0.0"]
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
