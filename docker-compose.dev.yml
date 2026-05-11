@@ -5,10 +5,6 @@ services:
       - "8000:8000"
     env_file:
       - .env.dev
-    environment:
-      - MONGODB_URI=${MONGODB_URI}
-      - MONGODB_DB_NAME=${MONGODB_DB_NAME}
-      - PYTHONPATH=/code
     depends_on:
       - mongo
     networks:
