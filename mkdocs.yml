@@ -1,5 +1,5 @@
-site_name: Nexus File Share
-site_description: Technical documentation and architecture — Nexus Solutions
+site_name: "{{project_name}}"
+site_description: "{{project_description}}"
 docs_dir: docs
 site_dir: public
 
@@ -19,7 +19,7 @@ theme:
         icon: material/brightness-4
         name: Light mode
   font:
-    text: Outfit
+    text: Inter
     code: Roboto Mono
   features:
     - navigation.instant
@@ -39,10 +39,8 @@ markdown_extensions:
 
 plugins:
   - search
-  - mermaid2:
-      javascript: https://unpkg.com/mermaid@10/dist/mermaid.min.js
 
 nav:
   - Home: index.md
   - Architecture: architecture.md
-  - Technical reference: technical.md
+  - API Reference: api.md

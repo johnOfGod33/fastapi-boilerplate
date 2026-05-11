@@ -2,6 +2,20 @@
 
 A small backend starter to ship APIs faster: **FastAPI** + **MongoDB** (Motor), a ready-made **auth / user** module, and **Docker** for local full-stack runs and production-style deployment.
 
+## Create a new project from this boilerplate
+
+```bash
+bash <(curl -sSL https://raw.githubusercontent.com/johnOfGod33/fastapi-boilerplate/main/setup.sh)
+```
+
+The script will interactively ask for the project name, description, destination directory, and configure `.env.dev` from `.env.example`. A fresh git repository is initialized at the end.
+
+You can also pass arguments directly:
+
+```bash
+bash setup.sh --name my-api --dest ~/projects/my-api
+```
+
 ## What you get
 
 - **User module** — Registration, login (JWT), and a protected `GET /auth/me` endpoint; password hashing with Argon2.
@@ -24,12 +38,12 @@ Copy the example env file and adjust values:
 cp .env.example .env
 ```
 
-| Variable | Purpose |
-|----------|---------|
-| `MONGODB_URI` | MongoDB connection string. Use `mongodb://localhost:27017` when you run Uvicorn on the host and MongoDB locally. When **both API and MongoDB run in Docker Compose**, the host in the URI must be the Compose service name: `mongodb://mongo:27017` (see below). |
-| `MONGODB_DB_NAME` | Database name |
-| `JWT_SECRET` | Signing secret for access tokens (use a strong value in production) |
-| `JWT_ALGORITHM` / `JWT_EXPIRE_MINUTES` | JWT settings |
+| Variable                               | Purpose                                                                                                                                                                                                                                                          |
+| -------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `MONGODB_URI`                          | MongoDB connection string. Use `mongodb://localhost:27017` when you run Uvicorn on the host and MongoDB locally. When **both API and MongoDB run in Docker Compose**, the host in the URI must be the Compose service name: `mongodb://mongo:27017` (see below). |
+| `MONGODB_DB_NAME`                      | Database name                                                                                                                                                                                                                                                    |
+| `JWT_SECRET`                           | Signing secret for access tokens (use a strong value in production)                                                                                                                                                                                              |
+| `JWT_ALGORITHM` / `JWT_EXPIRE_MINUTES` | JWT settings                                                                                                                                                                                                                                                     |
 
 ## Run locally (without Docker)
 
@@ -42,8 +56,8 @@ make run-dev
 
 Other targets:
 
-- `make run` — Uvicorn without reload  
-- `make test` — Pytest  
+- `make run` — Uvicorn without reload
+- `make test` — Pytest
 
 ## Run with Docker
 
