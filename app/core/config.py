@@ -23,7 +23,8 @@ class EnvConfig(BaseSettings):
 
     JWT_SECRET: str = "change-me-in-dev-use-openssl-rand-hex-32"
     JWT_ALGORITHM: str = "HS256"
-    JWT_EXPIRE_MINUTES: int = 60
+    JWT_EXPIRE_MINUTES: int = 15
+    REFRESH_TOKEN_EXPIRE_DAYS: int = 30
 
 
 envConfig = EnvConfig()

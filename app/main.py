@@ -1,14 +1,18 @@
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, HTTPException, Request, status
+from slowapi import _rate_limit_exceeded_handler
+from slowapi.errors import RateLimitExceeded
 
-from .core.database import shutdown_mongodb, start_up_mongodb
+from .core.database import create_indexes, shutdown_mongodb, start_up_mongodb
+from .core.limiter import limiter
 from .modules.user.router import router as user_router
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     await start_up_mongodb(app)
+    await create_indexes(app.db)
     yield
     await shutdown_mongodb(app)
 
@@ -19,6 +23,9 @@ app = FastAPI(
     version="1.0.0",
     lifespan=lifespan,
 )
+
+app.state.limiter = limiter
+app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
 app.include_router(user_router)
 

@@ -128,3 +128,17 @@ class TokenOut(BaseModel):
         default="bearer",
         description='Token type; always "bearer" for this flow.',
     )
+
+
+class RefreshTokenOut(BaseModel):
+    """Response including both tokens after login (mobile clients)."""
+
+    access_token: str = Field(description="Short-lived JWT (15 min).")
+    refresh_token: str = Field(description="Long-lived opaque token (mobile only).")
+    token_type: str = Field(default="bearer")
+
+
+class RefreshInput(BaseModel):
+    """Body for mobile refresh requests."""
+
+    refresh_token: str = Field(description="Opaque refresh token.")
