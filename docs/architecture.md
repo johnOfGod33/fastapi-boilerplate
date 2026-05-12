@@ -7,8 +7,9 @@ app/
   main.py              # FastAPI app, lifespan, routes registration
   core/
     config.py          # Settings loaded from environment variables
-    database.py        # MongoDB async client, shared DB accessor
+    database.py        # MongoDB async client, shared DB accessor, index creation
     security.py        # Password hashing (Argon2), JWT creation/verification
+    limiter.py         # slowapi rate-limiter singleton
     custom_document.py # Base document helpers
   modules/
     user/              # User domain: models, service, router
@@ -30,11 +31,20 @@ Client → FastAPI router → dependency injection → service layer → MongoDB
 
 ## Authentication
 
-JWT-based authentication using `python-jose`:
+JWT + opaque refresh token flow:
 
-1. `POST /auth/register` — creates user, hashes password with Argon2.
-2. `POST /auth/login` — verifies password, returns a signed JWT.
-3. Protected routes use the `get_current_user` dependency which decodes the token.
+1. `POST /auth/register` — creates user, hashes password with Argon2, enforces unique email and username.
+2. `POST /auth/login` — verifies password and `is_active` flag, returns a signed JWT (15 min) and a refresh token (30 days). The refresh token is SHA-256 hashed before storage. It is delivered as an `HttpOnly` cookie and in the response body.
+3. `POST /auth/refresh` — validates the refresh token, revokes it, and issues a new one (rotation). If a revoked token is reused, the entire token family is revoked (theft detection).
+4. `POST /auth/logout` — revokes all refresh tokens for the user and deletes the cookie.
+5. Protected routes use the `get_current_user` dependency which decodes the JWT.
+
+### MongoDB collections
+
+| Collection       | Purpose                                              |
+| ---------------- | ---------------------------------------------------- |
+| `users`          | User documents — unique indexes on `email`, `username` |
+| `refresh_tokens` | Active refresh tokens — unique index on `token_hash`, TTL index on `expires_at` (auto-deleted by MongoDB) |
 
 ## Adding a new module
 

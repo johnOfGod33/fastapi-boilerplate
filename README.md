@@ -18,8 +18,10 @@ bash setup.sh --name my-api --dest ~/projects/my-api
 
 ## What you get
 
-- **User module** — Registration, login (JWT), and a protected `GET /auth/me` endpoint; password hashing with Argon2.
-- **MongoDB** — Async client wired in the app lifespan, shared DB accessor for routes, and a `/health` check that pings MongoDB.
+- **User module** — Registration, login, token refresh, logout, and a protected `GET /auth/me` endpoint; password hashing with Argon2.
+- **JWT + Refresh token** — Short-lived access token (15 min) paired with a long-lived opaque refresh token (30 days, SHA-256 hashed in DB). Rotation on every refresh with family-based reuse detection (full revocation on theft). Refresh token delivered as an `HttpOnly` cookie (web) and in the response body (mobile).
+- **Rate limiting** — `slowapi` guards `/auth/register` (5/min) and `/auth/login` (10/min).
+- **MongoDB** — Async client wired in the app lifespan, shared DB accessor for routes, unique indexes on `email` and `username`, TTL index on `refresh_tokens.expires_at`, and a `/health` check that pings MongoDB.
 - **Docker** — Multi-stage image (Python 3.13), Compose stacks for **detached “prod-like”** runs and **interactive dev** (hot reload + bind-mounted `app/`).
 - **Quality hooks** — Tests (pytest), lint/format tooling in dependencies, and CI workflows under `.github/workflows/` (and optional GitLab CI if you use it).
 
@@ -43,7 +45,8 @@ cp .env.example .env
 | `MONGODB_URI`                          | MongoDB connection string. Use `mongodb://localhost:27017` when you run Uvicorn on the host and MongoDB locally. When **both API and MongoDB run in Docker Compose**, the host in the URI must be the Compose service name: `mongodb://mongo:27017` (see below). |
 | `MONGODB_DB_NAME`                      | Database name                                                                                                                                                                                                                                                    |
 | `JWT_SECRET`                           | Signing secret for access tokens (use a strong value in production)                                                                                                                                                                                              |
-| `JWT_ALGORITHM` / `JWT_EXPIRE_MINUTES` | JWT settings                                                                                                                                                                                                                                                     |
+| `JWT_ALGORITHM` / `JWT_EXPIRE_MINUTES` | JWT settings — access token expires in 15 minutes by default                                                                                                                                                                                                     |
+| `REFRESH_TOKEN_EXPIRE_DAYS`            | Refresh token lifetime in days (default: 30)                                                                                                                                                                                                                     |
 
 ## Run locally (without Docker)
 
